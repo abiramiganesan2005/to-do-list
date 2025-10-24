@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do Web App</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #1b1b2f;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 400px;
+      background: #162447;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    h2 {
+      text-align: center;
+      color: #e43f5a;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+    input, textarea {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #e43f5a;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #e85a71;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #1f4068;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li.completed {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    .task-info {
+      flex: 1;
+    }
+    .actions button {
+      margin-left: 5px;
+      background: #1b1b2f;
+      border: 1px solid #e43f5a;
+    }
+    .actions button:hover {
+      background: #e43f5a;
+    }
+    .date-time {
+      font-size: 12px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📝 To-Do Web App</h2>
+
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="Enter task..." />
+      <input type="datetime-local" id="taskDateTime" />
+      <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    let tasks = [];
+
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const dateTimeInput = document.getElementById("taskDateTime");
+      const taskText = taskInput.value.trim();
+      const taskDateTime = dateTimeInput.value;
+
+      if (!taskText) {
+        alert("Please enter a task!");
+        return;
+      }
+
+      const task = {
+        id: Date.now(),
+        text: taskText,
+        dateTime: taskDateTime,
+        completed: false,
+      };
+      tasks.push(task);
+      displayTasks();
+
+      taskInput.value = "";
+      dateTimeInput.value = "";
+    }
+
+    function displayTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.className = task.completed ? "completed" : "";
+
+        const taskInfo = document.createElement("div");
+        taskInfo.classList.add("task-info");
+        taskInfo.innerHTML = `
+          <div>${task.text}</div>
+          <div class="date-time">${task.dateTime || ""}</div>
+        `;
+
+        const actions = document.createElement("div");
+        actions.classList.add("actions");
+
+        const completeBtn = document.createElement("button");
+        completeBtn.textContent = "✔";
+        completeBtn.onclick = () => toggleComplete(task.id);
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "✎";
+        editBtn.onclick = () => editTask(task.id);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "🗑";
+        deleteBtn.onclick = () => deleteTask(task.id);
+
+        actions.appendChild(completeBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        li.appendChild(taskInfo);
+        li.appendChild(actions);
+        list.appendChild(li);
+      });
+    }
+
+    function toggleComplete(id) {
+      tasks = tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      );
+      displayTasks();
+    }
+
+    function editTask(id) {
+      const newText = prompt("Edit task:");
+      if (newText) {
+        tasks = tasks.map((task) =>
+          task.id === id ? { ...task, text: newText } : task
+        );
+        displayTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter((task) => task.id !== id);
+      displayTasks();
+    }
+  </script>
+</body>
+</html>
